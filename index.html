@@ -1,0 +1,2016 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Licencias SW 2026 - DERMAVAN</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    :root {
+      --bg-body: #f0f2f5;
+      --bg-sidebar: #ffffff;
+      --bg-header-gradient: linear-gradient(135deg, #1e3a5f 0%, #0f1e33 100%);
+      --primary: #0078d4;
+      --primary-dark: #005a9e;
+      --accent: #f39c12;
+      --text: #2d3748;
+      --text-secondary: #718096;
+      --text-light: #a0aec0;
+      --border: #e2e8f0;
+      --success: #38a169;
+      --warning: #dd6b20;
+      --danger: #e53e3e;
+      --radius: 12px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --shadow-lg: 0 10px 30px rgba(0,0,0,0.12);
+    }
+    body.dark {
+      --bg-body: #0f1419;
+      --bg-sidebar: #1a202c;
+      --text: #f7fafc;
+      --text-secondary: #a0aec0;
+      --text-light: #718096;
+      --border: #2d3748;
+    }
+    body.dark .category-card,
+    body.dark .article-card,
+    body.dark .detail-section,
+    body.dark .modal,
+    body.dark .search-history,
+    body.dark .stat-card,
+    body.dark .cost-banner,
+    body.dark .secret-row { color: var(--text); }
+    body.dark .modal-header { background: var(--bg-sidebar); }
+    body.dark .form-group input,
+    body.dark .form-group textarea,
+    body.dark .form-group select { background: #0f1419; color: var(--text); border-color: #2d3748; }
+    body.dark .form-group input::placeholder,
+    body.dark .form-group textarea::placeholder { color: #718096; }
+    body.dark .hero::after { background: var(--bg-body); }
+    body.dark .nav-item:hover { background: #0f1419; }
+    body.dark .nav-item.active { background: #2c5282; color: #90cdf4; }
+    body.dark .sidebar-brand { border-color: #2d3748; }
+    body.dark .sidebar-footer { border-color: #2d3748; }
+    body.dark .hero-search input { background: #1a202c; color: #f7fafc; }
+    body.dark .hero-search input::placeholder { color: #718096; }
+    body.dark .close-btn { background: #0f1419; }
+    body.dark .empty svg { fill: #2d3748; }
+    body.dark .search-history-item:hover { background: #0f1419; }
+    body.dark .detail-action-btn { background: #0f1419; }
+    body.dark .sort-dropdown { background: #1a202c; color: var(--text); }
+    body.dark .filter-banner { background: linear-gradient(135deg, #2c5282, #1a365d); }
+    body.dark .cost-banner { background: linear-gradient(135deg, #1a365d, #2c5282); }
+    body.dark .secret-row { background: #0f1419; }
+    body.dark .secret-action:hover { background: #2d3748; }
+    body.dark .days-badge.success { background: #1c4532; color: #9ae6b4; }
+    body.dark .days-badge.warning { background: #7b341e; color: #fbd38d; }
+    body.dark .days-badge.danger { background: #742a2a; color: #feb2b2; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg-body);
+      color: var(--text);
+      line-height: 1.5;
+      overflow-x: hidden;
+      transition: background 0.3s, color 0.3s;
+    }
+    .app-container { display: flex; min-height: 100vh; }
+
+    .sidebar {
+      width: 260px;
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: 0; left: 0;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 100;
+      transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar-brand {
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .sidebar-brand .logo {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, #0078d4, #005a9e);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 16px; font-weight: 700;
+      box-shadow: 0 4px 12px rgba(0,120,212,0.3);
+      flex-shrink: 0;
+    }
+    .sidebar-brand h2 { font-size: 14px; font-weight: 700; line-height: 1.2; }
+    .sidebar-brand h2 span { color: var(--primary); }
+    .sidebar-brand .subtitle { font-size: 11px; color: var(--text-secondary); font-weight: 400; }
+    .sidebar-nav { padding: 16px 12px; flex: 1; }
+    .nav-section-title {
+      font-size: 11px; font-weight: 700; color: var(--text-light);
+      text-transform: uppercase; letter-spacing: 0.5px;
+      padding: 8px 12px; margin-top: 12px;
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 12px; border-radius: 8px;
+      color: var(--text-secondary); text-decoration: none;
+      font-size: 14px; font-weight: 500; cursor: pointer;
+      transition: all 0.2s; margin-bottom: 2px; position: relative;
+    }
+    .nav-item:hover { background: var(--bg-body); color: var(--text); }
+    .nav-item.active { background: #e6f2fc; color: var(--primary); font-weight: 600; }
+    .nav-item svg { width: 18px; height: 18px; fill: currentColor; flex-shrink: 0; }
+    .nav-badge {
+      margin-left: auto; background: var(--accent); color: white;
+      font-size: 10px; font-weight: 700; padding: 2px 6px;
+      border-radius: 10px; min-width: 18px; text-align: center;
+    }
+    .sidebar-footer {
+      padding: 16px; border-top: 1px solid var(--border);
+      font-size: 12px; color: var(--text-secondary);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+
+    .main-wrapper { flex: 1; margin-left: 260px; display: flex; flex-direction: column; min-height: 100vh; }
+
+    .top-header {
+      background: var(--bg-header-gradient); color: white;
+      padding: 16px 24px; display: flex; align-items: center;
+      justify-content: space-between; gap: 16px;
+      position: sticky; top: 0; z-index: 90; box-shadow: var(--shadow-sm);
+    }
+    .top-header .menu-toggle {
+      display: none; background: none; border: none;
+      color: white; cursor: pointer; padding: 6px; border-radius: 8px;
+    }
+    .top-header .menu-toggle:hover { background: rgba(255,255,255,0.1); }
+    .top-header .menu-toggle svg { width: 24px; height: 24px; fill: white; display: block; }
+    .top-header h1 { font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+    .top-header h1 svg { width: 22px; height: 22px; fill: white; }
+    .header-actions { display: flex; align-items: center; gap: 8px; }
+    .header-icon {
+      position: relative; cursor: pointer; padding: 8px;
+      border-radius: 8px; transition: background 0.2s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .header-icon:hover { background: rgba(255,255,255,0.15); }
+    .header-icon svg { width: 20px; height: 20px; fill: white; display: block; }
+    .user-profile {
+      display: flex; align-items: center; gap: 10px;
+      cursor: pointer; padding: 4px 10px 4px 4px;
+      border-radius: 20px; transition: background 0.2s;
+    }
+    .user-profile:hover { background: rgba(255,255,255,0.15); }
+    .user-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: linear-gradient(135deg, #f39c12, #e67e22);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 12px; color: white;
+    }
+    .user-name { font-size: 13px; font-weight: 500; }
+
+    .hero {
+      background: var(--bg-header-gradient); color: white;
+      padding: 40px 24px 60px; text-align: center; position: relative;
+    }
+    .hero::after {
+      content: ''; position: absolute; bottom: 0;
+      left: 0; right: 0; height: 30px;
+      background: var(--bg-body); border-radius: 30px 30px 0 0;
+    }
+    .hero h2 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+    .hero p { font-size: 15px; opacity: 0.85; margin-bottom: 24px; }
+    .hero-search { max-width: 640px; margin: 0 auto; position: relative; z-index: 2; }
+    .hero-search input {
+      width: 100%; padding: 16px 56px 16px 48px;
+      border: 1px solid transparent; border-radius: 12px;
+      font-size: 15px; box-shadow: var(--shadow-lg);
+      outline: none; color: var(--text); background: white;
+      transition: border 0.2s, box-shadow 0.2s;
+    }
+    .hero-search input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(0,120,212,0.15), var(--shadow-lg);
+    }
+    .hero-search .search-icon {
+      position: absolute; left: 16px; top: 50%;
+      transform: translateY(-50%); width: 20px; height: 20px;
+      fill: var(--text-light); pointer-events: none;
+    }
+    .hero-search button {
+      position: absolute; right: 6px; top: 6px; bottom: 6px;
+      width: 44px; border: none; background: var(--accent);
+      border-radius: 8px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+    }
+    .hero-search button:hover { background: #e67e22; }
+    .hero-search button svg { width: 20px; height: 20px; fill: white; }
+
+    .search-history {
+      position: absolute; top: calc(100% + 8px); left: 0; right: 0;
+      background: var(--bg-sidebar); border-radius: 12px;
+      box-shadow: var(--shadow-lg); border: 1px solid var(--border);
+      z-index: 10; max-height: 300px; overflow-y: auto; display: none;
+    }
+    .search-history.active { display: block; }
+    .search-history-header {
+      padding: 10px 16px 6px; font-size: 11px; font-weight: 700;
+      color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .search-history-clear {
+      font-size: 11px; color: var(--primary); cursor: pointer;
+      font-weight: 600; text-transform: none; letter-spacing: 0;
+    }
+    .search-history-clear:hover { text-decoration: underline; }
+    .search-history-item {
+      padding: 10px 16px; font-size: 14px; color: var(--text);
+      cursor: pointer; display: flex; align-items: center; gap: 10px;
+      transition: background 0.15s; border: none; background: none;
+      width: 100%; text-align: left; font-family: inherit;
+    }
+    .search-history-item:hover { background: var(--bg-body); }
+    .search-history-item svg { width: 16px; height: 16px; fill: var(--text-light); flex-shrink: 0; }
+
+    .content { padding: 24px; flex: 1; margin-top: -20px; position: relative; z-index: 3; }
+    .section-title {
+      font-size: 18px; font-weight: 700; color: var(--text);
+      margin-bottom: 16px; display: flex;
+      align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 8px;
+    }
+    .section-title .sort-dropdown {
+      font-size: 12px; padding: 6px 10px; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--bg-sidebar);
+      color: var(--text); cursor: pointer; font-family: inherit; outline: none;
+    }
+    .section-title .sort-dropdown:focus { border-color: var(--primary); }
+
+    .stats-row {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px; margin-bottom: 20px;
+    }
+    .stat-card {
+      background: var(--bg-sidebar); border-radius: var(--radius);
+      padding: 16px; border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 12px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary);
+    }
+    .stat-card.active {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0,120,212,0.15), var(--shadow-md);
+    }
+    .stat-card.active::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--primary);
+    }
+    .stat-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .stat-icon svg { width: 20px; height: 20px; fill: white; }
+    .stat-icon.blue { background: linear-gradient(135deg, #0078d4, #005a9e); }
+    .stat-icon.orange { background: linear-gradient(135deg, #f39c12, #e67e22); }
+    .stat-icon.green { background: linear-gradient(135deg, #38a169, #2f855a); }
+    .stat-icon.red { background: linear-gradient(135deg, #e53e3e, #c53030); }
+    .stat-info h3 { font-size: 20px; font-weight: 700; color: var(--text); line-height: 1; }
+    .stat-info p { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.3px; margin-top: 4px; }
+
+    /* COST BANNER */
+    .cost-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 20px;
+      background: linear-gradient(135deg, #e6f2fc, #d4e8f9);
+      border: 1px solid var(--primary);
+      border-radius: var(--radius);
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      box-shadow: var(--shadow-sm);
+    }
+    .cost-banner-info { display: flex; align-items: center; gap: 12px; }
+    .cost-banner-icon {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, #38a169, #2f855a);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .cost-banner-icon svg { width: 20px; height: 20px; fill: white; }
+    .cost-banner-label {
+      font-size: 11px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+    .cost-banner-value {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.1;
+    }
+    .cost-banner-value small {
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-weight: 500;
+      margin-left: 4px;
+    }
+    .cost-banner-meta {
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-align: right;
+    }
+
+    .filter-banner {
+      display: none;
+      background: linear-gradient(135deg, #e6f2fc, #d4e8f9);
+      border: 1px solid var(--primary);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      animation: fadeIn 0.3s ease;
+    }
+    .filter-banner.active { display: flex; }
+    .filter-banner-info {
+      display: flex; align-items: center; gap: 10px;
+      color: var(--primary);
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .filter-banner-info svg { width: 18px; height: 18px; fill: var(--primary); flex-shrink: 0; }
+    .filter-banner-clear {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    .filter-banner-clear:hover { background: var(--primary-dark); }
+    .filter-banner-clear svg { width: 12px; height: 12px; fill: white; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .categories-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 16px; margin-bottom: 32px;
+    }
+    .category-card {
+      background: var(--bg-sidebar); border-radius: var(--radius);
+      padding: 20px 16px; text-align: center; cursor: pointer;
+      transition: all 0.2s; border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm); position: relative; overflow: hidden;
+    }
+    .category-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 3px; background: var(--primary);
+      transform: scaleX(0); transition: transform 0.3s;
+    }
+    .category-card:hover {
+      transform: translateY(-3px); box-shadow: var(--shadow-md);
+      border-color: var(--primary);
+    }
+    .category-card:hover::before { transform: scaleX(1); }
+    .category-card.active { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,120,212,0.15); }
+    .category-card.active::before { transform: scaleX(1); }
+    .category-icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 12px;
+    }
+    .category-icon svg { width: 24px; height: 24px; fill: white; }
+    .cat-1 { background: linear-gradient(135deg, #0078d4, #005a9e); }
+    .cat-2 { background: linear-gradient(135deg, #f39c12, #e67e22); }
+    .cat-3 { background: linear-gradient(135deg, #38a169, #2f855a); }
+    .cat-4 { background: linear-gradient(135deg, #805ad5, #6b46c1); }
+    .cat-5 { background: linear-gradient(135deg, #e53e3e, #c53030); }
+    .cat-6 { background: linear-gradient(135deg, #00b5d8, #0987a0); }
+    .category-card h4 { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    .category-card p { font-size: 12px; color: var(--text-secondary); }
+
+    .articles-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+    .article-card {
+      background: var(--bg-sidebar); border-radius: var(--radius);
+      padding: 20px; cursor: pointer; transition: all 0.2s;
+      border: 1px solid var(--border); box-shadow: var(--shadow-sm);
+      display: flex; flex-direction: column; position: relative;
+    }
+    .article-card:hover {
+      transform: translateY(-3px); box-shadow: var(--shadow-md);
+      border-color: var(--primary);
+    }
+    .article-card .top-row { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
+    .article-card .icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .article-card .icon svg { width: 20px; height: 20px; fill: white; }
+    .article-card .title-wrap { flex: 1; padding-right: 30px; }
+    .article-card h3 {
+      font-size: 15px; font-weight: 600; color: var(--text);
+      line-height: 1.3;
+    }
+    .article-card .version {
+      font-size: 12px; color: var(--text-secondary);
+      margin-top: 2px;
+    }
+    .article-card .desc {
+      font-size: 13px; color: var(--text-secondary);
+      margin-bottom: 12px; display: -webkit-box;
+      -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+      overflow: hidden; flex: 1;
+    }
+    .article-card .footer {
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 11px; color: var(--text-light);
+      padding-top: 12px; border-top: 1px solid var(--border);
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .article-card .footer .badges { display: flex; gap: 4px; flex-wrap: wrap; }
+    .mini-badge {
+      font-size: 10px; font-weight: 600; padding: 2px 6px;
+      border-radius: 4px; text-transform: uppercase;
+    }
+    .mb-Alta { background: #ffe5e5; color: var(--danger); }
+    .mb-Media { background: #fff4e5; color: var(--warning); }
+    .mb-Baja { background: #e6f9ec; color: var(--success); }
+    .mb-status { background: #e6f2fc; color: var(--primary); }
+    .mb-tipo { background: #f0e6fc; color: #6b46c1; }
+
+    .days-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .days-badge.success { background: #e6f9ec; color: #2f855a; }
+    .days-badge.warning { background: #fff4e5; color: #c05621; }
+    .days-badge.danger  { background: #ffe5e5; color: #c53030; }
+    .days-badge.unknown { background: var(--bg-body); color: var(--text-light); }
+
+    .bookmark-btn {
+      position: absolute; top: 12px; right: 12px;
+      width: 32px; height: 32px; border-radius: 8px;
+      border: none; background: var(--bg-body);
+      cursor: pointer; display: flex; align-items: center;
+      justify-content: center; transition: all 0.2s; z-index: 2; opacity: 0.7;
+    }
+    .bookmark-btn:hover { opacity: 1; background: var(--border); }
+    .bookmark-btn svg { width: 16px; height: 16px; fill: var(--text-light); transition: fill 0.2s; }
+    .bookmark-btn.active svg { fill: var(--accent); }
+    .bookmark-btn.active { opacity: 1; }
+
+    .empty {
+      text-align: center; padding: 60px 20px;
+      color: var(--text-secondary); grid-column: 1 / -1;
+    }
+    .empty svg { width: 64px; height: 64px; fill: var(--border); margin-bottom: 16px; }
+    .empty h3 { font-size: 18px; margin-bottom: 8px; color: var(--text); }
+    .empty p { font-size: 14px; }
+
+    .fab {
+      position: fixed; bottom: 24px; right: 24px;
+      width: 56px; height: 56px; border-radius: 50%;
+      background: linear-gradient(135deg, #f39c12, #e67e22);
+      color: white; border: none; font-size: 28px;
+      box-shadow: 0 4px 16px rgba(243,156,18,0.5);
+      cursor: pointer; display: flex; align-items: center;
+      justify-content: center; transition: transform 0.2s; z-index: 200;
+    }
+    .fab:hover { transform: scale(1.05); }
+    .fab:active { transform: scale(0.92); }
+    .fab svg { width: 24px; height: 24px; fill: white; }
+
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px); display: none;
+      align-items: flex-end; justify-content: center; z-index: 300;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: var(--bg-sidebar); width: 100%; max-width: 640px;
+      max-height: 92vh; border-radius: 20px 20px 0 0;
+      overflow-y: auto; padding: 24px; animation: slideUp 0.3s ease;
+    }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .modal-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 20px; position: sticky; top: 0;
+      background: var(--bg-sidebar); padding-bottom: 12px;
+      border-bottom: 1px solid var(--border); z-index: 10;
+    }
+    .modal-header h2 { font-size: 18px; font-weight: 700; }
+    .close-btn {
+      background: var(--bg-body); border: none;
+      width: 32px; height: 32px; border-radius: 50%;
+      cursor: pointer; color: var(--text-secondary);
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+    }
+    .close-btn:hover { background: var(--border); }
+    .close-btn svg { width: 16px; height: 16px; fill: currentColor; }
+
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+      display: block; font-size: 12px; font-weight: 700;
+      color: var(--text-secondary); margin-bottom: 6px;
+      text-transform: uppercase; letter-spacing: 0.3px;
+    }
+    .form-group input, .form-group textarea, .form-group select {
+      width: 100%; padding: 12px; border: 1px solid var(--border);
+      border-radius: 10px; font-size: 15px; font-family: inherit;
+      background: var(--bg-body); color: var(--text);
+      outline: none; transition: border 0.2s, background 0.2s, box-shadow 0.2s;
+    }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+      border-color: var(--primary); background: var(--bg-sidebar);
+      box-shadow: 0 0 0 3px rgba(0,120,212,0.1);
+    }
+    .form-group input::placeholder, .form-group textarea::placeholder { color: var(--text-light); }
+    .form-group textarea { min-height: 80px; resize: vertical; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+    .input-with-toggle { position: relative; }
+    .input-with-toggle input { padding-right: 44px; }
+    .input-with-toggle .toggle-pw {
+      position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer;
+      color: var(--text-secondary); font-size: 16px; padding: 4px;
+      border-radius: 4px;
+    }
+    .input-with-toggle .toggle-pw:hover { background: var(--border); }
+
+    .btn {
+      width: 100%; padding: 14px; border: none;
+      border-radius: 12px; font-size: 16px; font-weight: 600;
+      cursor: pointer; transition: all 0.2s; font-family: inherit;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn svg { width: 18px; height: 18px; fill: currentColor; }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-danger { background: #ffe5e5; color: var(--danger); margin-top: 8px; }
+    .btn-danger:hover { background: #fed7d7; }
+
+    .detail-view { display: none; }
+    .detail-view.active { display: block; }
+    .list-view.hidden { display: none; }
+    .detail-header {
+      background: var(--bg-sidebar); padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 50;
+      display: flex; align-items: center;
+      justify-content: space-between; gap: 8px;
+    }
+    .detail-header-actions { display: flex; gap: 8px; }
+    .detail-action-btn {
+      background: var(--bg-body); border: 1px solid var(--border);
+      width: 36px; height: 36px; border-radius: 8px;
+      cursor: pointer; display: flex; align-items: center;
+      justify-content: center; transition: all 0.2s;
+    }
+    .detail-action-btn:hover { background: var(--border); }
+    .detail-action-btn svg { width: 18px; height: 18px; fill: var(--text-secondary); }
+    .detail-action-btn.active svg { fill: var(--accent); }
+    .back-btn {
+      background: none; border: none; color: var(--primary);
+      font-size: 14px; font-weight: 600; cursor: pointer;
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 10px; border-radius: 8px;
+      transition: background 0.2s; font-family: inherit;
+    }
+    .back-btn:hover { background: #e6f2fc; }
+    .back-btn svg { width: 16px; height: 16px; fill: currentColor; }
+    .detail-content { padding: 24px; max-width: 800px; }
+    .detail-section {
+      background: var(--bg-sidebar); border-radius: var(--radius);
+      padding: 20px; margin-bottom: 12px;
+      box-shadow: var(--shadow-sm); border: 1px solid var(--border);
+    }
+    .detail-section h4 {
+      font-size: 12px; font-weight: 700; color: var(--text-secondary);
+      text-transform: uppercase; letter-spacing: 0.5px;
+      margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+    }
+    .detail-section h4 svg { width: 14px; height: 14px; fill: var(--primary); }
+    .detail-section p { font-size: 15px; white-space: pre-wrap; }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+    }
+    .info-item .info-label {
+      font-size: 11px; font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase; letter-spacing: 0.3px;
+      margin-bottom: 4px;
+    }
+    .info-item .info-value {
+      font-size: 15px; color: var(--text); font-weight: 500;
+      word-break: break-word;
+    }
+
+    .secret-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      background: var(--bg-body);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      border: 1px solid var(--border);
+    }
+    .secret-label {
+      font-size: 11px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      font-weight: 700;
+      min-width: 90px;
+      flex-shrink: 0;
+      letter-spacing: 0.3px;
+    }
+    .secret-value {
+      flex: 1;
+      font-family: 'SF Mono', Menlo, Consolas, monospace;
+      font-size: 14px;
+      word-break: break-all;
+      color: var(--text);
+    }
+    .secret-action {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 6px 8px;
+      border-radius: 6px;
+      font-size: 16px;
+      line-height: 1;
+      color: var(--text-secondary);
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    .secret-action:hover { background: var(--border); color: var(--text); }
+
+    .sidebar-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5); z-index: 99;
+    }
+    .sidebar-overlay.active { display: block; }
+
+    .toast {
+      position: fixed; bottom: 90px; left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--text); color: var(--bg-sidebar);
+      padding: 12px 20px; border-radius: 10px;
+      font-size: 14px; font-weight: 500;
+      box-shadow: var(--shadow-lg); opacity: 0;
+      transition: all 0.3s; z-index: 500;
+      pointer-events: none; max-width: 90%;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    .sync-indicator {
+      display: inline-block; width: 8px; height: 8px;
+      border-radius: 50%; background: var(--success); margin-right: 6px;
+    }
+    .sync-indicator.syncing { background: var(--warning); animation: pulse 1s infinite; }
+    .sync-indicator.error { background: var(--danger); }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    @media (max-width: 900px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .main-wrapper { margin-left: 0; }
+      .top-header .menu-toggle { display: flex; }
+      .hero h2 { font-size: 22px; }
+      .hero { padding: 30px 16px 50px; }
+      .content { padding: 16px; }
+      .categories-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .articles-grid { grid-template-columns: 1fr; }
+      .user-name { display: none; }
+      .detail-content { padding: 16px; }
+      .form-row, .form-row-3 { grid-template-columns: 1fr; }
+      .filter-banner { flex-direction: column; align-items: stretch; text-align: center; }
+      .filter-banner-info { justify-content: center; }
+      .cost-banner { flex-direction: column; text-align: center; }
+      .cost-banner-meta { text-align: center; }
+    }
+    @media (max-width: 480px) {
+      .top-header h1 { font-size: 14px; }
+      .stats-row { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="logo">LS</div>
+        <div>
+          <h2>Licencias <span>SW 2026</span></h2>
+          <div class="subtitle">DERMAVAN · Google Sheets</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Navegación</div>
+        <a class="nav-item active" onclick="showView()">
+          <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+          Inicio
+        </a>
+        <a class="nav-item" data-nav="bookmarks" onclick="showBookmarks()">
+          <svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
+          Favoritos
+          <span class="nav-badge" id="bookmarkBadge" style="display:none">0</span>
+        </a>
+        <a class="nav-item" onclick="pullFromCloud(true)">
+          <svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+          Sincronizar
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <span><span class="sync-indicator" id="syncDot"></span><span id="syncText">Listo</span></span>
+        <span>v1.0</span>
+      </div>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <div class="main-wrapper">
+      <header class="top-header">
+        <button class="menu-toggle" onclick="toggleSidebar()">
+          <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+        </button>
+        <h1>
+          <svg viewBox="0 0 24 24"><path d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v4h4v-4h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>
+          LICENCIAS SW
+        </h1>
+        <div class="header-actions">
+          <div class="header-icon" title="Modo oscuro" onclick="toggleDark()">
+            <svg id="darkIcon" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
+          </div>
+          <div class="user-profile">
+            <div class="user-avatar">JLR</div>
+            <span class="user-name">Admin</span>
+          </div>
+        </div>
+      </header>
+
+      <div id="listView" class="list-view">
+        <section class="hero">
+          <h2>Gestión de Licencias de Software</h2>
+          <p>Consulta credenciales, vencimientos y costos de tus licencias</p>
+          <div class="hero-search">
+            <svg class="search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <input type="text" id="searchInput" placeholder="Buscar por producto, usuario, correo..." autocomplete="off">
+            <button onclick="document.getElementById('searchInput').focus()">
+              <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            </button>
+            <div class="search-history" id="searchHistory"></div>
+          </div>
+        </section>
+
+        <div class="content">
+          <div class="stats-row">
+            <div class="stat-card" data-stat="total" onclick="filterByStat('total')">
+              <div class="stat-icon blue">
+                <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+              </div>
+              <div class="stat-info"><h3 id="statTotal">0</h3><p>Total</p></div>
+            </div>
+            <div class="stat-card" data-stat="active" onclick="filterByStat('active')">
+              <div class="stat-icon green">
+                <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+              </div>
+              <div class="stat-info"><h3 id="statActive">0</h3><p>Activas</p></div>
+            </div>
+            <div class="stat-card" data-stat="expiring" onclick="filterByStat('expiring')">
+              <div class="stat-icon orange">
+                <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+              </div>
+              <div class="stat-info"><h3 id="statExpiring">0</h3><p>Por vencer</p></div>
+            </div>
+            <div class="stat-card" data-stat="expired" onclick="filterByStat('expired')">
+              <div class="stat-icon red">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+              </div>
+              <div class="stat-info"><h3 id="statExpired">0</h3><p>Vencidas</p></div>
+            </div>
+          </div>
+
+          <div class="cost-banner" id="costBanner">
+            <div class="cost-banner-info">
+              <div class="cost-banner-icon">
+                <svg viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+              </div>
+              <div>
+                <div class="cost-banner-label">Costo anual total</div>
+                <div class="cost-banner-value" id="costTotal">$0 <small>USD</small></div>
+              </div>
+            </div>
+            <div class="cost-banner-meta" id="costMeta">— licencias activas</div>
+          </div>
+
+          <div class="filter-banner" id="filterBanner">
+            <div class="filter-banner-info">
+              <svg viewBox="0 0 24 24"><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg>
+              <span id="filterBannerText">Filtro activo</span>
+            </div>
+            <button class="filter-banner-clear" onclick="clearStatFilter()">
+              <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+              Limpiar filtro
+            </button>
+          </div>
+
+          <div class="section-title">Explorar por Tipo</div>
+          <div class="categories-grid" id="categoriesGrid"></div>
+
+          <div class="section-title">
+            <span id="articlesTitle">Licencias (por vencimiento)</span>
+            <select class="sort-dropdown" onchange="changeSort(this.value)">
+              <option value="expiration" selected>Por vencimiento</option>
+              <option value="days">Por días restantes</option>
+              <option value="product">Por producto (A-Z)</option>
+              <option value="cost">Por costo (mayor→menor)</option>
+              <option value="recent">Orden original</option>
+            </select>
+            <span id="articleCount"></span>
+          </div>
+          <div class="articles-grid" id="articlesGrid">
+            <div class="empty">
+              <h3>Cargando licencias...</h3>
+              <p>Conectando con Google Sheets</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="detailView" class="detail-view">
+        <div class="detail-header">
+          <button class="back-btn" onclick="closeDetail()">
+            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            Volver
+          </button>
+          <div class="detail-header-actions">
+            <button class="detail-action-btn" id="detailBookmark" onclick="toggleBookmarkCurrent()" title="Marcar como favorito">
+              <svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="detail-content" id="detailContent"></div>
+      </div>
+    </div>
+  </div>
+
+  <button class="fab" onclick="openModal()" title="Nueva Licencia">
+    <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+  </button>
+
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modalTitle">Nueva Licencia</h2>
+        <button class="close-btn" onclick="closeModal()">
+          <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </div>
+      <form id="articleForm">
+        <input type="hidden" id="articleId">
+        <div class="form-group">
+          <label>Producto *</label>
+          <input type="text" id="producto" required placeholder="Ej: Microsoft 365 Business, Adobe CC, Antivirus...">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Versión</label>
+            <input type="text" id="version" placeholder="Ej: 2024, 5.2.1">
+          </div>
+          <div class="form-group">
+            <label>Tipo</label>
+            <input type="text" id="tipo" list="tipoList" placeholder="Ej: Suscripción, Permanente...">
+            <datalist id="tipoList"></datalist>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Privilegio</label>
+            <input type="text" id="privilegio" list="privilegioList" placeholder="Ej: Admin, Usuario, Estándar...">
+            <datalist id="privilegioList"></datalist>
+          </div>
+          <div class="form-group">
+            <label>Estatus</label>
+            <select id="estatus">
+              <option value="Activa" selected>Activa</option>
+              <option value="Por vencer">Por vencer</option>
+              <option value="Vencida">Vencida</option>
+              <option value="Inactiva">Inactiva</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Usuario / Equipo</label>
+            <input type="text" id="usuario" placeholder="Ej: Juan López / PC-LAB-01">
+          </div>
+          <div class="form-group">
+            <label>Correo asignado</label>
+            <input type="email" id="correo" placeholder="usuario@dermavan.com">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Password</label>
+            <div class="input-with-toggle">
+              <input type="password" id="password" placeholder="Contraseña de la licencia" autocomplete="new-password">
+              <button type="button" class="toggle-pw" onclick="togglePasswordVisibility('password', this)">👁️</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Clave / Serial</label>
+            <div class="input-with-toggle">
+              <input type="password" id="serial" placeholder="XXXX-XXXX-XXXX-XXXX" autocomplete="off">
+              <button type="button" class="toggle-pw" onclick="togglePasswordVisibility('serial', this)">👁️</button>
+            </div>
+          </div>
+        </div>
+        <div class="form-row-3">
+          <div class="form-group">
+            <label>Costo anual (USD)</label>
+            <input type="number" id="costo" step="0.01" min="0" placeholder="0.00">
+          </div>
+          <div class="form-group">
+            <label>Fecha compra</label>
+            <input type="date" id="fechaCompra">
+          </div>
+          <div class="form-group">
+            <label>Vencimiento</label>
+            <input type="date" id="vencimiento">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Observaciones</label>
+          <textarea id="observaciones" placeholder="Notas, ubicación del contrato, proveedor, etc."></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+          <svg viewBox="0 0 24 24"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>
+          Guardar Licencia
+        </button>
+        <button type="button" class="btn btn-danger" id="deleteBtn" style="display:none" onclick="deleteArticle()">
+          <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+          Eliminar
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ============================================================
+    // CONFIGURACIÓN
+    // ------------------------------------------------------------
+    // ⚠️ DEBES CREAR UN NUEVO APPS SCRIPT EN TU HOJA "licencias sw 2026"
+    //    y publicarlo como Web App (acceso: cualquier persona).
+    //    Pega la URL resultante abajo.
+    //
+    //    El Apps Script debe implementar las acciones:
+    //    - list   → { articles: [...] }
+    //    - create → recibe 'data' (JSON stringificado)
+    //    - update → recibe 'id' y 'data'
+    //    - delete → recibe 'id'
+    //    Y soportar el parámetro 'callback' para JSONP.
+    //
+    //    Te dejo un Apps Script base al final de este archivo (comentado).
+    // ============================================================
+    const API_URL = 'PEGA_AQUI_TU_NUEVA_URL_DE_APPS_SCRIPT';
+    const API_TOKEN = 'licencias-sw-2026-dermavan';
+    const CACHE_KEY = 'lic_cache';
+    const BOOKMARKS_KEY = 'lic_bookmarks';
+    const HISTORY_KEY = 'lic_history';
+    const MAX_HISTORY = 8;
+
+    // ===== ICONOS =====
+    const KEY_ICON = '<svg viewBox="0 0 24 24"><path d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v4h4v-4h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>';
+    const BOX_ICON = '<svg viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>';
+    const SHIELD_ICON = '<svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>';
+    const CLOUD_ICON = '<svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>';
+
+    const CAT_COLORS = ['cat-1','cat-2','cat-3','cat-4','cat-5','cat-6'];
+
+    // ===== ESTADO =====
+    let allArticles = [];
+    let currentTipoFilter = null;
+    let currentSearch = '';
+    let currentSort = 'expiration';
+    let showOnlyBookmarks = false;
+    let currentStatFilter = null;
+    let currentDetailArticle = null;
+
+    const STAT_LABELS = {
+      'total': 'Todas las licencias',
+      'active': 'Licencias Activas',
+      'expiring': 'Por vencer (≤30 días)',
+      'expired': 'Licencias Vencidas'
+    };
+
+    // ===== UTILIDADES =====
+    function escapeHtml(str) {
+      if (!str && str !== 0) return '';
+      return String(str).replace(/[&<>"']/g, function(m) {
+        return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m];
+      });
+    }
+    function parseDate(val) {
+      if (!val) return null;
+      if (val instanceof Date) return isNaN(val.getTime()) ? null : val;
+      const d = new Date(val);
+      if (!isNaN(d.getTime())) return d;
+      const m = String(val).match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
+      if (m) {
+        const y = m[3].length === 2 ? 2000 + parseInt(m[3]) : parseInt(m[3]);
+        return new Date(y, parseInt(m[2]) - 1, parseInt(m[1]));
+      }
+      return null;
+    }
+    function getDaysRemaining(lic) {
+      const raw = lic['Días restantes'];
+      if (raw !== undefined && raw !== '' && raw !== null) {
+        const d = parseInt(raw);
+        if (!isNaN(d)) return d;
+      }
+      const venc = parseDate(lic['Vencimiento']);
+      if (venc) {
+        const today = new Date(); today.setHours(0, 0, 0, 0);
+        const v = new Date(venc); v.setHours(0, 0, 0, 0);
+        return Math.round((v - today) / 86400000);
+      }
+      return null;
+    }
+    function getExpiryInfo(lic) {
+      const days = getDaysRemaining(lic);
+      if (days === null) return { days: null, label: '—', class: 'unknown', status: 'unknown' };
+      if (days < 0) return { days: days, label: Math.abs(days) + 'd vencida', class: 'danger', status: 'expired' };
+      if (days === 0) return { days: 0, label: 'Vence hoy', class: 'warning', status: 'expiring' };
+      if (days <= 30) return { days: days, label: days + 'd', class: 'warning', status: 'expiring' };
+      return { days: days, label: days + 'd', class: 'success', status: 'active' };
+    }
+    function formatDate(val) {
+      const d = parseDate(val);
+      if (!d) return '—';
+      return d.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+    function formatCost(val) {
+      const n = parseFloat(val);
+      if (isNaN(n)) return '—';
+      return n.toLocaleString('es-MX', { style: 'currency', currency: 'USD' });
+    }
+    function getCategoryIcon() { return KEY_ICON; }
+
+    // ===== LOCAL STORAGE =====
+    function getBookmarks() {
+      try { return JSON.parse(localStorage.getItem(BOOKMARKS_KEY) || '[]'); }
+      catch(e) { return []; }
+    }
+    function saveBookmarks(ids) {
+      localStorage.setItem(BOOKMARKS_KEY, JSON.stringify(ids));
+      updateBookmarkBadge();
+    }
+    function isBookmarked(id) { return getBookmarks().indexOf(String(id)) !== -1; }
+    function toggleBookmark(id) {
+      const ids = getBookmarks();
+      const idx = ids.indexOf(String(id));
+      if (idx === -1) ids.push(String(id));
+      else ids.splice(idx, 1);
+      saveBookmarks(ids);
+      showToast(idx === -1 ? '⭐ Añadido a favoritos' : '☆ Eliminado de favoritos');
+      renderArticles();
+    }
+    function updateBookmarkBadge() {
+      const count = getBookmarks().length;
+      const badge = document.getElementById('bookmarkBadge');
+      if (badge) {
+        if (count > 0) { badge.style.display = 'flex'; badge.textContent = count; }
+        else { badge.style.display = 'none'; }
+      }
+    }
+
+    // ===== SEARCH HISTORY =====
+    function getSearchHistory() {
+      try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); }
+      catch(e) { return []; }
+    }
+    function addSearchHistory(query) {
+      query = (query || '').trim();
+      if (!query || query.length < 2) return;
+      let history = getSearchHistory();
+      history = history.filter(function(h) { return h !== query; });
+      history.unshift(query);
+      if (history.length > MAX_HISTORY) history = history.slice(0, MAX_HISTORY);
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+      renderSearchHistory();
+    }
+    function clearSearchHistory() {
+      localStorage.setItem(HISTORY_KEY, '[]');
+      renderSearchHistory();
+      showToast('🗑️ Historial borrado');
+    }
+    function renderSearchHistory() {
+      const container = document.getElementById('searchHistory');
+      if (!container) return;
+      const history = getSearchHistory();
+      if (history.length === 0) { container.classList.remove('active'); return; }
+      container.innerHTML =
+        '<div class="search-history-header">' +
+        '<span>Búsquedas recientes</span>' +
+        '<span class="search-history-clear" onclick="clearSearchHistory()">Borrar</span>' +
+        '</div>' +
+        history.map(function(q) {
+          return '<button class="search-history-item" onclick="useSearchHistory(\'' + escapeHtml(q).replace(/'/g, "\\'") + '\')">' +
+            '<svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>' +
+            escapeHtml(q) +
+            '</button>';
+        }).join('');
+    }
+    function useSearchHistory(q) {
+      document.getElementById('searchInput').value = q;
+      currentSearch = q;
+      document.getElementById('searchHistory').classList.remove('active');
+      renderArticles();
+    }
+
+    // ===== API (JSONP) =====
+    function apiCall(action, extraParams) {
+      extraParams = extraParams || {};
+      return new Promise(function(resolve, reject) {
+        setSyncStatus('syncing');
+        const callbackName = 'licCallback_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+        const params = new URLSearchParams(Object.assign({ action: action, token: API_TOKEN }, extraParams));
+        params.append('callback', callbackName);
+        let timeout;
+        window[callbackName] = function(data) {
+          delete window[callbackName];
+          if (script && script.parentNode) script.parentNode.removeChild(script);
+          clearTimeout(timeout);
+          if (data.error) { setSyncStatus('error'); reject(new Error(data.error)); }
+          else { setSyncStatus('ok'); resolve(data); }
+        };
+        timeout = setTimeout(function() {
+          delete window[callbackName];
+          if (script && script.parentNode) script.parentNode.removeChild(script);
+          setSyncStatus('error');
+          reject(new Error('Timeout'));
+        }, 25000);
+        const script = document.createElement('script');
+        script.src = API_URL + '?' + params.toString();
+        script.onerror = function() {
+          delete window[callbackName];
+          if (script && script.parentNode) script.parentNode.removeChild(script);
+          clearTimeout(timeout);
+          setSyncStatus('error');
+          reject(new Error('Error al cargar el script'));
+        };
+        document.body.appendChild(script);
+      });
+    }
+
+    function setSyncStatus(status) {
+      const dot = document.getElementById('syncDot');
+      const text = document.getElementById('syncText');
+      if (!dot || !text) return;
+      dot.className = 'sync-indicator';
+      if (status === 'syncing') { dot.classList.add('syncing'); text.textContent = 'Sincronizando...'; }
+      else if (status === 'error') { dot.classList.add('error'); text.textContent = 'Sin conexión'; }
+      else { text.textContent = 'Listo'; }
+    }
+
+    // ===== CACHE =====
+    function saveCache(articles) {
+      try { localStorage.setItem(CACHE_KEY, JSON.stringify({ articles: articles, ts: Date.now() })); } catch(e) {}
+    }
+    function loadCache() {
+      try {
+        const data = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+        if (data && data.articles) return data.articles;
+      } catch(e) {}
+      return null;
+    }
+
+    async function pullFromCloud(showMsg) {
+      try {
+        const data = await apiCall('list');
+        allArticles = data.articles || data.licencias || [];
+        saveCache(allArticles);
+        renderCategories();
+        renderArticles();
+        updateStats();
+        if (showMsg) showToast('✅ Sincronizado: ' + allArticles.length + ' licencias');
+      } catch (err) {
+        const cached = loadCache();
+        if (cached && cached.length > 0 && allArticles.length === 0) {
+          allArticles = cached;
+          renderCategories();
+          renderArticles();
+          updateStats();
+          showToast('📦 Mostrando datos en caché');
+        } else {
+          showToast('❌ Error al sincronizar: ' + err.message);
+        }
+      }
+    }
+
+    function updateStats() {
+      const total = allArticles.length;
+      let active = 0, expiring = 0, expired = 0, cost = 0;
+      allArticles.forEach(function(a) {
+        const info = getExpiryInfo(a);
+        if (info.status === 'active') active++;
+        else if (info.status === 'expiring') expiring++;
+        else if (info.status === 'expired') expired++;
+        const c = parseFloat(a['Costo ANUAL (USD)']);
+        if (!isNaN(c)) cost += c;
+      });
+      const setVal = function(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; };
+      setVal('statTotal', total);
+      setVal('statActive', active);
+      setVal('statExpiring', expiring);
+      setVal('statExpired', expired);
+      const costEl = document.getElementById('costTotal');
+      if (costEl) costEl.innerHTML = formatCost(cost) + ' <small>USD</small>';
+      const metaEl = document.getElementById('costMeta');
+      if (metaEl) metaEl.textContent = active + ' activas · ' + total + ' totales';
+    }
+
+    // ===== FILTRO POR STATS =====
+    function filterByStat(stat) {
+      if (currentStatFilter === stat) { clearStatFilter(); return; }
+      currentStatFilter = stat;
+      currentTipoFilter = null;
+      currentSearch = '';
+      showOnlyBookmarks = false;
+      document.getElementById('searchInput').value = '';
+      updateStatCardsUI();
+      updateFilterBanner();
+      document.getElementById('articlesTitle').textContent = '📊 ' + (STAT_LABELS[stat] || 'Filtro');
+      renderArticles();
+      const grid = document.querySelector('.articles-grid');
+      if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    function clearStatFilter() {
+      currentStatFilter = null;
+      updateStatCardsUI();
+      updateFilterBanner();
+      document.getElementById('articlesTitle').textContent = 'Licencias (por vencimiento)';
+      renderArticles();
+    }
+    function updateStatCardsUI() {
+      document.querySelectorAll('.stat-card').forEach(function(card) {
+        const stat = card.getAttribute('data-stat');
+        card.classList.toggle('active', stat === currentStatFilter);
+      });
+    }
+    function updateFilterBanner() {
+      const banner = document.getElementById('filterBanner');
+      const text = document.getElementById('filterBannerText');
+      if (!banner || !text) return;
+      if (currentStatFilter) {
+        banner.classList.add('active');
+        text.textContent = STAT_LABELS[currentStatFilter] || 'Filtro activo';
+      } else {
+        banner.classList.remove('active');
+      }
+    }
+
+    // ===== SIDEBAR / DARK =====
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('sidebarOverlay').classList.toggle('active');
+    }
+    function toggleDark() {
+      document.body.classList.toggle('dark');
+      const isDark = document.body.classList.contains('dark');
+      localStorage.setItem('lic_dark', isDark ? '1' : '0');
+      const icon = document.getElementById('darkIcon');
+      if (icon) {
+        icon.innerHTML = isDark
+          ? '<path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41.39.39 1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41.39.39 1.03.39 1.41 0l1.06-1.06z"/>'
+          : '<path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>';
+      }
+    }
+    if (localStorage.getItem('lic_dark') === '1') toggleDark();
+
+    // ===== VISTAS =====
+    function showView() {
+      currentTipoFilter = null;
+      currentSearch = '';
+      showOnlyBookmarks = false;
+      currentStatFilter = null;
+      document.getElementById('searchInput').value = '';
+      document.getElementById('articlesTitle').textContent = 'Licencias (por vencimiento)';
+      document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
+      const firstNav = document.querySelector('.nav-item');
+      if (firstNav) firstNav.classList.add('active');
+      updateStatCardsUI();
+      updateFilterBanner();
+      closeDetail();
+      renderArticles();
+      if (window.innerWidth < 900) toggleSidebar();
+    }
+    function showBookmarks() {
+      showOnlyBookmarks = true;
+      currentTipoFilter = null;
+      currentSearch = '';
+      currentStatFilter = null;
+      document.getElementById('searchInput').value = '';
+      document.getElementById('articlesTitle').textContent = '⭐ Mis Favoritos';
+      document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
+      const bmNav = document.querySelector('[data-nav="bookmarks"]');
+      if (bmNav) bmNav.classList.add('active');
+      updateStatCardsUI();
+      updateFilterBanner();
+      closeDetail();
+      renderArticles();
+      if (window.innerWidth < 900) toggleSidebar();
+    }
+
+    // ===== CATEGORÍAS (por Tipo, dinámicas) =====
+    function renderCategories() {
+      const grid = document.getElementById('categoriesGrid');
+      if (!grid) return;
+      const counts = {};
+      allArticles.forEach(function(a) {
+        const t = (a['Tipo'] || 'Sin tipo').trim() || 'Sin tipo';
+        counts[t] = (counts[t] || 0) + 1;
+      });
+      const tipos = Object.keys(counts).sort(function(a, b) { return counts[b] - counts[a]; });
+      if (tipos.length === 0) {
+        grid.innerHTML = '<div class="empty" style="grid-column:1/-1;padding:20px;"><p>Sin tipos registrados</p></div>';
+        return;
+      }
+      grid.innerHTML = tipos.map(function(t, i) {
+        const color = CAT_COLORS[i % CAT_COLORS.length];
+        return '<div class="category-card' + (currentTipoFilter === t ? ' active' : '') + '" onclick="filterByTipo(\'' + escapeHtml(t).replace(/'/g, "\\'") + '\')">' +
+          '<div class="category-icon ' + color + '">' + getCategoryIcon() + '</div>' +
+          '<h4>' + escapeHtml(t) + '</h4>' +
+          '<p>' + counts[t] + ' licencia' + (counts[t] !== 1 ? 's' : '') + '</p>' +
+          '</div>';
+      }).join('');
+    }
+    function filterByTipo(tipo) {
+      currentTipoFilter = (currentTipoFilter === tipo) ? null : tipo;
+      showOnlyBookmarks = false;
+      currentStatFilter = null;
+      updateStatCardsUI();
+      updateFilterBanner();
+      document.getElementById('articlesTitle').textContent = currentTipoFilter
+        ? 'Licencias de tipo: ' + tipo : 'Licencias (por vencimiento)';
+      renderCategories();
+      renderArticles();
+      const grid = document.querySelector('.articles-grid');
+      if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // ===== ORDENAR =====
+    function sortArticles(articles) {
+      const sorted = articles.slice();
+      switch (currentSort) {
+        case 'expiration':
+          return sorted.sort(function(a, b) {
+            const da = parseDate(a['Vencimiento']);
+            const db = parseDate(b['Vencimiento']);
+            if (!da && !db) return 0;
+            if (!da) return 1;
+            if (!db) return -1;
+            return da - db;
+          });
+        case 'days':
+          return sorted.sort(function(a, b) {
+            const da = getDaysRemaining(a);
+            const db = getDaysRemaining(b);
+            if (da === null && db === null) return 0;
+            if (da === null) return 1;
+            if (db === null) return -1;
+            return da - db;
+          });
+        case 'product':
+          return sorted.sort(function(a, b) {
+            return (a['Producto'] || '').localeCompare(b['Producto'] || '');
+          });
+        case 'cost':
+          return sorted.sort(function(a, b) {
+            const ca = parseFloat(a['Costo ANUAL (USD)']) || 0;
+            const cb = parseFloat(b['Costo ANUAL (USD)']) || 0;
+            return cb - ca;
+          });
+        case 'recent':
+        default:
+          return sorted;
+      }
+    }
+    function changeSort(val) {
+      currentSort = val;
+      renderArticles();
+    }
+
+    // ===== RENDER =====
+    function renderArticles() {
+      let filtered = allArticles.slice();
+
+      if (showOnlyBookmarks) {
+        const bms = getBookmarks();
+        filtered = filtered.filter(function(a) { return bms.indexOf(String(a['ID'])) !== -1; });
+      }
+      if (currentTipoFilter) {
+        filtered = filtered.filter(function(a) { return (a['Tipo'] || 'Sin tipo') === currentTipoFilter; });
+      }
+      if (currentStatFilter === 'active') {
+        filtered = filtered.filter(function(a) { return getExpiryInfo(a).status === 'active'; });
+      } else if (currentStatFilter === 'expiring') {
+        filtered = filtered.filter(function(a) { return getExpiryInfo(a).status === 'expiring'; });
+      } else if (currentStatFilter === 'expired') {
+        filtered = filtered.filter(function(a) { return getExpiryInfo(a).status === 'expired'; });
+      }
+      if (currentSearch) {
+        const s = currentSearch.toLowerCase();
+        filtered = filtered.filter(function(a) {
+          const fields = ['Producto','Versión','Tipo','Privilegio','Usuario/Equipo','Correo asignado','Estatus','Observaciones'];
+          return fields.some(function(f) { return (a[f] || '').toLowerCase().indexOf(s) !== -1; });
+        });
+      }
+
+      filtered = sortArticles(filtered);
+
+      const countEl = document.getElementById('articleCount');
+      if (countEl) countEl.textContent = filtered.length + ' licencia' + (filtered.length !== 1 ? 's' : '');
+
+      const grid = document.getElementById('articlesGrid');
+      if (!grid) return;
+
+      if (filtered.length === 0) {
+        let emptyTitle = 'No hay licencias';
+        let emptyMsg = 'Toca el botón + para registrar la primera';
+        if (showOnlyBookmarks) {
+          emptyTitle = 'No tienes favoritos';
+          emptyMsg = 'Toca ⭐ en una licencia para guardarla';
+        } else if (currentStatFilter) {
+          emptyTitle = 'Sin resultados';
+          emptyMsg = 'No hay licencias que coincidan con este filtro';
+        }
+        grid.innerHTML = '<div class="empty">' +
+          '<svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>' +
+          '<h3>' + emptyTitle + '</h3>' +
+          '<p>' + emptyMsg + '</p>' +
+          '</div>';
+        return;
+      }
+
+      grid.innerHTML = filtered.map(function(a) {
+        const info = getExpiryInfo(a);
+        const marked = isBookmarked(a['ID']);
+        const catColor = CAT_COLORS[0];
+        const usuario = a['Usuario/Equipo'] || '';
+        const costo = parseFloat(a['Costo ANUAL (USD)']);
+        const costoStr = !isNaN(costo) ? formatCost(costo) : '';
+
+        return '<div class="article-card" onclick="openDetail(\'' + a['ID'] + '\')">' +
+          '<button class="bookmark-btn' + (marked ? ' active' : '') + '" onclick="event.stopPropagation(); toggleBookmark(\'' + a['ID'] + '\')" title="Favorito">' +
+            '<svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>' +
+          '</button>' +
+          '<div class="top-row">' +
+          '<div class="icon ' + catColor + '">' + KEY_ICON + '</div>' +
+          '<div class="title-wrap">' +
+          '<h3>' + escapeHtml(a['Producto'] || 'Sin nombre') + '</h3>' +
+          (a['Versión'] ? '<div class="version">v' + escapeHtml(a['Versión']) + (a['Tipo'] ? ' · ' + escapeHtml(a['Tipo']) : '') + '</div>' : (a['Tipo'] ? '<div class="version">' + escapeHtml(a['Tipo']) + '</div>' : '')) +
+          '</div>' +
+          '</div>' +
+          (usuario ? '<p class="desc">👤 ' + escapeHtml(usuario) + (a['Privilegio'] ? ' · ' + escapeHtml(a['Privilegio']) : '') + '</p>' : '<p class="desc">' + escapeHtml(a['Observaciones'] || 'Sin observaciones') + '</p>') +
+          '<div class="footer">' +
+          '<div class="badges">' +
+          (a['Estatus'] ? '<span class="mini-badge mb-status">' + escapeHtml(a['Estatus']) + '</span>' : '') +
+          (a['Tipo'] ? '<span class="mini-badge mb-tipo">' + escapeHtml(a['Tipo']) + '</span>' : '') +
+          '</div>' +
+          '<span class="days-badge ' + info.class + '">⏱ ' + info.label + '</span>' +
+          '</div>' +
+          (costoStr ? '<div class="footer" style="border-top:none;padding-top:4px;justify-content:flex-end;color:var(--text-secondary);font-size:11px;">💰 ' + costoStr + ' / año</div>' : '') +
+          '</div>';
+      }).join('');
+    }
+
+    // ===== DETALLE =====
+    function openDetail(id) {
+      const a = allArticles.find(function(x) { return String(x['ID']) === String(id); });
+      if (!a) return;
+      currentDetailArticle = a;
+      const info = getExpiryInfo(a);
+      const marked = isBookmarked(a['ID']);
+      const hasPw = a['Password'] && String(a['Password']).length > 0;
+      const hasSerial = a['Clave/Serial'] && String(a['Clave/Serial']).length > 0;
+
+      document.getElementById('detailContent').innerHTML =
+        '<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">' +
+        '<div class="category-icon ' + CAT_COLORS[0] + '" style="margin:0;width:56px;height:56px;flex-shrink:0;">' + KEY_ICON + '</div>' +
+        '<div style="flex:1;min-width:0;">' +
+        '<h1 style="font-size:22px;margin-bottom:6px;word-break:break-word;">' + escapeHtml(a['Producto'] || 'Sin nombre') + '</h1>' +
+        '<div class="meta" style="display:flex;flex-wrap:wrap;gap:6px;">' +
+        (a['Tipo'] ? '<span class="mini-badge mb-tipo">' + escapeHtml(a['Tipo']) + '</span>' : '') +
+        (a['Versión'] ? '<span class="mini-badge mb-status">v' + escapeHtml(a['Versión']) + '</span>' : '') +
+        (a['Estatus'] ? '<span class="mini-badge mb-status">' + escapeHtml(a['Estatus']) + '</span>' : '') +
+        '<span class="days-badge ' + info.class + '">⏱ ' + info.label + '</span>' +
+        '</div>' +
+        '</div>' +
+        '</div>' +
+
+        '<div class="detail-section">' +
+        '<h4><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>Asignación</h4>' +
+        '<div class="info-grid">' +
+        '<div class="info-item"><div class="info-label">Usuario / Equipo</div><div class="info-value">' + escapeHtml(a['Usuario/Equipo'] || '—') + '</div></div>' +
+        '<div class="info-item"><div class="info-label">Correo asignado</div><div class="info-value">' + escapeHtml(a['Correo asignado'] || '—') + '</div></div>' +
+        '<div class="info-item"><div class="info-label">Privilegio</div><div class="info-value">' + escapeHtml(a['Privilegio'] || '—') + '</div></div>' +
+        '</div>' +
+        '</div>' +
+
+        '<div class="detail-section">' +
+        '<h4><svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>Vigencia y costo</h4>' +
+        '<div class="info-grid">' +
+        '<div class="info-item"><div class="info-label">Fecha de compra</div><div class="info-value">' + formatDate(a['Fecha compra']) + '</div></div>' +
+        '<div class="info-item"><div class="info-label">Vencimiento</div><div class="info-value">' + formatDate(a['Vencimiento']) + '</div></div>' +
+        '<div class="info-item"><div class="info-label">Días restantes</div><div class="info-value"><span class="days-badge ' + info.class + '">' + info.label + '</span></div></div>' +
+        '<div class="info-item"><div class="info-label">Costo anual</div><div class="info-value">' + (parseFloat(a['Costo ANUAL (USD)']) ? formatCost(a['Costo ANUAL (USD)']) + ' USD' : '—') + '</div></div>' +
+        '</div>' +
+        '</div>' +
+
+        '<div class="detail-section">' +
+        '<h4><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>Credenciales</h4>' +
+        '<div class="secret-row">' +
+        '<span class="secret-label">Password</span>' +
+        '<span class="secret-value" id="pwVal">' + (hasPw ? '••••••••' : 'No configurada') + '</span>' +
+        (hasPw ? '<button class="secret-action" onclick="revealSecret(\'' + a['ID'] + '\', \'password\', this)" title="Mostrar/Ocultar">👁️</button>' +
+                 '<button class="secret-action" onclick="copySecret(\'' + a['ID'] + '\', \'password\')" title="Copiar">📋</button>' : '') +
+        '</div>' +
+        '<div class="secret-row">' +
+        '<span class="secret-label">Clave/Serial</span>' +
+        '<span class="secret-value" id="snVal">' + (hasSerial ? '••••••••' : 'No configurada') + '</span>' +
+        (hasSerial ? '<button class="secret-action" onclick="revealSecret(\'' + a['ID'] + '\', \'serial\', this)" title="Mostrar/Ocultar">👁️</button>' +
+                     '<button class="secret-action" onclick="copySecret(\'' + a['ID'] + '\', \'serial\')" title="Copiar">📋</button>' : '') +
+        '</div>' +
+        '</div>' +
+
+        (a['Observaciones'] ? '<div class="detail-section"><h4><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg>Observaciones</h4><p>' + escapeHtml(a['Observaciones']) + '</p></div>' : '') +
+
+        '<div style="display:flex;gap:8px;margin-top:12px;">' +
+        '<button class="btn btn-primary" onclick="editArticle(\'' + a['ID'] + '\')" style="flex:1;">' +
+        '<svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg>' +
+        'Editar</button>' +
+        '<button class="btn" onclick="printArticle()" style="flex:1;background:var(--bg-body);color:var(--text);">' +
+        '<svg viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>' +
+        'Imprimir</button>' +
+        '</div>';
+
+      document.getElementById('listView').classList.add('hidden');
+      document.getElementById('detailView').classList.add('active');
+      const bmBtn = document.getElementById('detailBookmark');
+      if (bmBtn) bmBtn.classList.toggle('active', marked);
+      window.scrollTo(0, 0);
+    }
+    function closeDetail() {
+      currentDetailArticle = null;
+      document.getElementById('detailView').classList.remove('active');
+      document.getElementById('listView').classList.remove('hidden');
+      renderArticles();
+    }
+    function toggleBookmarkCurrent() {
+      if (currentDetailArticle) {
+        toggleBookmark(currentDetailArticle['ID']);
+        openDetail(currentDetailArticle['ID']);
+      }
+    }
+
+    // ===== SECRETS =====
+    function revealSecret(id, field, btn) {
+      const lic = allArticles.find(function(x) { return String(x['ID']) === String(id); });
+      if (!lic) return;
+      const spanId = field === 'password' ? 'pwVal' : 'snVal';
+      const span = document.getElementById(spanId);
+      if (!span) return;
+      const real = field === 'password' ? lic['Password'] : lic['Clave/Serial'];
+      if (span.textContent === '••••••••') {
+        span.textContent = real || 'No configurada';
+        btn.textContent = '🙈';
+      } else {
+        span.textContent = '••••••••';
+        btn.textContent = '👁️';
+      }
+    }
+    function copyToClipboard(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        return navigator.clipboard.writeText(text);
+      }
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch(e) {}
+      document.body.removeChild(ta);
+      return Promise.resolve();
+    }
+    function copySecret(id, field) {
+      const lic = allArticles.find(function(x) { return String(x['ID']) === String(id); });
+      if (!lic) return;
+      const val = field === 'password' ? lic['Password'] : lic['Clave/Serial'];
+      if (!val) return;
+      copyToClipboard(String(val)).then(function() {
+        showToast('📋 Copiado al portapapeles');
+      }).catch(function() {
+        showToast('❌ No se pudo copiar');
+      });
+    }
+
+    // ===== IMPRIMIR =====
+    function printArticle() {
+      if (!currentDetailArticle) return;
+      const a = currentDetailArticle;
+      const printWindow = window.open('', '_blank');
+      printWindow.document.write(
+        '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + escapeHtml(a['Producto']) + '</title>' +
+        '<style>' +
+        'body{font-family:Arial,sans-serif;padding:40px;color:#2d3748;max-width:800px;margin:0 auto;}' +
+        'h1{font-size:24px;margin-bottom:8px;color:#0078d4;}' +
+        '.meta{margin-bottom:20px;padding-bottom:16px;border-bottom:2px solid #e2e8f0;font-size:12px;}' +
+        '.meta span{display:inline-block;padding:3px 10px;background:#e6f2fc;color:#0078d4;border-radius:4px;margin-right:6px;font-weight:600;}' +
+        'h4{font-size:11px;color:#718096;text-transform:uppercase;letter-spacing:1px;margin:20px 0 8px;}' +
+        'table{width:100%;border-collapse:collapse;margin-bottom:16px;}' +
+        'td{padding:8px;border-bottom:1px solid #e2e8f0;font-size:14px;}' +
+        'td:first-child{font-weight:600;width:200px;color:#718096;}' +
+        'p{font-size:14px;line-height:1.6;white-space:pre-wrap;}' +
+        '.footer{margin-top:40px;padding-top:20px;border-top:1px solid #e2e8f0;font-size:11px;color:#a0aec0;text-align:center;}' +
+        '</style></head><body>' +
+        '<h1>' + escapeHtml(a['Producto']) + '</h1>' +
+        '<div class="meta">' +
+        (a['Tipo'] ? '<span>' + escapeHtml(a['Tipo']) + '</span>' : '') +
+        (a['Versión'] ? '<span>v' + escapeHtml(a['Versión']) + '</span>' : '') +
+        (a['Estatus'] ? '<span>' + escapeHtml(a['Estatus']) + '</span>' : '') +
+        '</div>' +
+        '<h4>Datos generales</h4>' +
+        '<table>' +
+        '<tr><td>Usuario / Equipo</td><td>' + escapeHtml(a['Usuario/Equipo'] || '—') + '</td></tr>' +
+        '<tr><td>Correo asignado</td><td>' + escapeHtml(a['Correo asignado'] || '—') + '</td></tr>' +
+        '<tr><td>Privilegio</td><td>' + escapeHtml(a['Privilegio'] || '—') + '</td></tr>' +
+        '<tr><td>Password</td><td>' + escapeHtml(a['Password'] || '—') + '</td></tr>' +
+        '<tr><td>Clave/Serial</td><td>' + escapeHtml(a['Clave/Serial'] || '—') + '</td></tr>' +
+        '</table>' +
+        '<h4>Vigencia y costo</h4>' +
+        '<table>' +
+        '<tr><td>Fecha compra</td><td>' + formatDate(a['Fecha compra']) + '</td></tr>' +
+        '<tr><td>Vencimiento</td><td>' + formatDate(a['Vencimiento']) + '</td></tr>' +
+        '<tr><td>Días restantes</td><td>' + getExpiryInfo(a).label + '</td></tr>' +
+        '<tr><td>Costo anual</td><td>' + (parseFloat(a['Costo ANUAL (USD)']) ? formatCost(a['Costo ANUAL (USD)']) + ' USD' : '—') + '</td></tr>' +
+        '</table>' +
+        (a['Observaciones'] ? '<h4>Observaciones</h4><p>' + escapeHtml(a['Observaciones']) + '</p>' : '') +
+        '<div class="footer">Licencias SW 2026 · DERMAVAN · ' + new Date().toLocaleString('es-MX') + '</div>' +
+        '</body></html>'
+      );
+      printWindow.document.close();
+      setTimeout(function() { printWindow.print(); }, 300);
+    }
+
+    // ===== MODAL =====
+    function togglePasswordVisibility(inputId, btn) {
+      const input = document.getElementById(inputId);
+      if (!input) return;
+      input.type = input.type === 'password' ? 'text' : 'password';
+      btn.textContent = input.type === 'password' ? '👁️' : '🙈';
+    }
+
+    function openModal() {
+      document.getElementById('modalTitle').textContent = 'Nueva Licencia';
+      document.getElementById('articleForm').reset();
+      document.getElementById('articleId').value = '';
+      document.getElementById('deleteBtn').style.display = 'none';
+      populateDatalists();
+      document.getElementById('modalOverlay').classList.add('active');
+    }
+    function editArticle(id) {
+      const a = allArticles.find(function(x) { return String(x['ID']) === String(id); });
+      if (!a) return;
+      document.getElementById('modalTitle').textContent = 'Editar Licencia';
+      document.getElementById('articleId').value = a['ID'];
+      document.getElementById('producto').value = a['Producto'] || '';
+      document.getElementById('version').value = a['Versión'] || '';
+      document.getElementById('tipo').value = a['Tipo'] || '';
+      document.getElementById('privilegio').value = a['Privilegio'] || '';
+      document.getElementById('usuario').value = a['Usuario/Equipo'] || '';
+      document.getElementById('correo').value = a['Correo asignado'] || '';
+      document.getElementById('password').value = a['Password'] || '';
+      document.getElementById('serial').value = a['Clave/Serial'] || '';
+      document.getElementById('costo').value = a['Costo ANUAL (USD)'] || '';
+      const fc = parseDate(a['Fecha compra']);
+      if (fc) document.getElementById('fechaCompra').value = fc.toISOString().slice(0, 10);
+      const vc = parseDate(a['Vencimiento']);
+      if (vc) document.getElementById('vencimiento').value = vc.toISOString().slice(0, 10);
+      document.getElementById('estatus').value = a['Estatus'] || 'Activa';
+      document.getElementById('observaciones').value = a['Observaciones'] || '';
+      document.getElementById('deleteBtn').style.display = 'flex';
+      populateDatalists();
+      document.getElementById('modalOverlay').classList.add('active');
+    }
+    function closeModal() {
+      document.getElementById('modalOverlay').classList.remove('active');
+    }
+    function populateDatalists() {
+      const tipos = new Set();
+      const privs = new Set();
+      allArticles.forEach(function(a) {
+        if (a['Tipo']) tipos.add(a['Tipo']);
+        if (a['Privilegio']) privs.add(a['Privilegio']);
+      });
+      const tipoList = document.getElementById('tipoList');
+      const privList = document.getElementById('privilegioList');
+      if (tipoList) tipoList.innerHTML = Array.from(tipos).map(function(t) { return '<option value="' + escapeHtml(t) + '">'; }).join('');
+      if (privList) privList.innerHTML = Array.from(privs).map(function(t) { return '<option value="' + escapeHtml(t) + '">'; }).join('');
+    }
+
+    // ===== GUARDAR =====
+    document.getElementById('articleForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const id = document.getElementById('articleId').value;
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      const originalText = submitBtn.innerHTML;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '⏳ Guardando...';
+
+      try {
+        const data = {
+          'Producto': document.getElementById('producto').value.trim(),
+          'Versión': document.getElementById('version').value.trim(),
+          'Tipo': document.getElementById('tipo').value.trim(),
+          'Privilegio': document.getElementById('privilegio').value.trim(),
+          'Usuario/Equipo': document.getElementById('usuario').value.trim(),
+          'Correo asignado': document.getElementById('correo').value.trim(),
+          'Password': document.getElementById('password').value,
+          'Clave/Serial': document.getElementById('serial').value,
+          'Costo ANUAL (USD)': parseFloat(document.getElementById('costo').value) || '',
+          'Fecha compra': document.getElementById('fechaCompra').value,
+          'Vencimiento': document.getElementById('vencimiento').value,
+          'Estatus': document.getElementById('estatus').value,
+          'Observaciones': document.getElementById('observaciones').value.trim()
+        };
+
+        if (id) {
+          await apiCall('update', { id: id, data: JSON.stringify(data) });
+          showToast('✅ Licencia actualizada');
+        } else {
+          await apiCall('create', { data: JSON.stringify(data) });
+          showToast('✅ Licencia creada');
+        }
+        closeModal();
+        closeDetail();
+        await pullFromCloud();
+      } catch (err) {
+        showToast('❌ Error: ' + err.message);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+      }
+    });
+
+    async function deleteArticle() {
+      const id = document.getElementById('articleId').value;
+      if (!id) return;
+      if (!confirm('¿Eliminar esta licencia permanentemente?')) return;
+      try {
+        await apiCall('delete', { id: id });
+        showToast('🗑️ Licencia eliminada');
+        closeModal();
+        closeDetail();
+        await pullFromCloud();
+      } catch (err) {
+        showToast('❌ Error: ' + err.message);
+      }
+    }
+
+    // ===== BÚSQUEDA =====
+    let searchDebounce;
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+      currentSearch = e.target.value;
+      renderArticles();
+      clearTimeout(searchDebounce);
+      if (currentSearch.length >= 3) {
+        searchDebounce = setTimeout(function() { addSearchHistory(currentSearch); }, 1500);
+      }
+      const container = document.getElementById('searchHistory');
+      if (container) container.classList.remove('active');
+    });
+    document.getElementById('searchInput').addEventListener('focus', function() {
+      renderSearchHistory();
+      if (!currentSearch) {
+        const container = document.getElementById('searchHistory');
+        const history = getSearchHistory();
+        if (history.length > 0 && container) container.classList.add('active');
+      }
+    });
+    document.getElementById('searchInput').addEventListener('blur', function() {
+      setTimeout(function() {
+        const container = document.getElementById('searchHistory');
+        if (container) container.classList.remove('active');
+      }, 200);
+    });
+    document.getElementById('searchInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        addSearchHistory(currentSearch);
+        document.getElementById('searchHistory').classList.remove('active');
+      }
+    });
+
+    // ===== TOAST =====
+    let toastTimeout;
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      if (!t) return;
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(function() { t.classList.remove('show'); }, 2500);
+    }
+
+    // ===== INIT =====
+    function init() {
+      updateBookmarkBadge();
+      renderSearchHistory();
+
+      const cached = loadCache();
+      if (cached && cached.length > 0) {
+        allArticles = cached;
+        renderCategories();
+        renderArticles();
+        updateStats();
+      }
+
+      pullFromCloud();
+    }
+    document.addEventListener('DOMContentLoaded', init);
+    if (document.readyState !== 'loading') init();
+
+    // ============================================================
+    // 📋 APPS SCRIPT BASE (pegar en el editor de Apps Script de tu hoja)
+    // ------------------------------------------------------------
+    // 1. Abre tu hoja "licencias sw 2026" → Extensiones → Apps Script
+    // 2. Pega el siguiente código
+    // 3. Ajusta SHEET_NAME si tu pestaña no se llama "Hoja 1"
+    // 4. Implementar → Nueva implementación → Web App
+    //    · Ejecutar como: Yo
+    //    · Quién tiene acceso: Cualquier persona
+    // 5. Copia la URL y pégala arriba en API_URL
+    // ============================================================
+    /*
+    const SHEET_NAME = 'Hoja 1';
+    const TOKEN = 'licencias-sw-2026-dermavan';
+
+    function doGet(e) {
+      const p = e.parameter || {};
+      if (p.token !== TOKEN) return respond({ error: 'Token inválido' }, p.callback);
+      let result;
+      try {
+        if (p.action === 'list')       result = { articles: listAll() };
+        else if (p.action === 'create') result = { article: create(JSON.parse(p.data)) };
+        else if (p.action === 'update') result = { article: update(p.id, JSON.parse(p.data)) };
+        else if (p.action === 'delete') result = { ok: remove(p.id) };
+        else result = { error: 'Acción desconocida' };
+      } catch (err) {
+        result = { error: err.message };
+      }
+      return respond(result, p.callback);
+    }
+
+    function respond(obj, cb) {
+      const out = JSON.stringify(obj);
+      if (cb) {
+        return ContentService.createTextOutput(cb + '(' + out + ')')
+          .setMimeType(ContentService.MimeType.JAVASCRIPT);
+      }
+      return ContentService.createTextOutput(out).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    function getSheet() {
+      return SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+    }
+
+    function headers() {
+      const sh = getSheet();
+      return sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0].map(function(h) { return String(h).trim(); });
+    }
+
+    function listAll() {
+      const sh = getSheet();
+      const data = sh.getDataRange().getValues();
+      if (data.length < 2) return [];
+      const h = data[0].map(function(x) { return String(x).trim(); });
+      const out = [];
+      for (let i = 1; i < data.length; i++) {
+        if (!data[i][0]) continue;
+        const obj = {};
+        h.forEach(function(k, j) {
+          let v = data[i][j];
+          if (v instanceof Date) v = v.toISOString();
+          obj[k] = v;
+        });
+        out.push(obj);
+      }
+      return out;
+    }
+
+    function create(data) {
+      const sh = getSheet();
+      const id = Utilities.getUuid();
+      const h = headers();
+      const row = h.map(function(k) {
+        if (k === 'ID') return id;
+        return data[k] !== undefined ? data[k] : '';
+      });
+      sh.appendRow(row);
+      data['ID'] = id;
+      return data;
+    }
+
+    function update(id, data) {
+      const sh = getSheet();
+      const values = sh.getDataRange().getValues();
+      const h = values[0].map(function(x) { return String(x).trim(); });
+      const idCol = h.indexOf('ID');
+      for (let i = 1; i < values.length; i++) {
+        if (String(values[i][idCol]) === String(id)) {
+          h.forEach(function(k, j) {
+            if (k === 'ID') return;
+            if (k === 'Días restantes') return; // respeta la fórmula
+            if (data[k] !== undefined) {
+              sh.getRange(i + 1, j + 1).setValue(data[k]);
+            }
+          });
+          data['ID'] = id;
+          return data;
+        }
+      }
+      throw new Error('Licencia no encontrada');
+    }
+
+    function remove(id) {
+      const sh = getSheet();
+      const values = sh.getDataRange().getValues();
+      const idCol = values[0].map(function(x) { return String(x).trim(); }).indexOf('ID');
+      for (let i = 1; i < values.length; i++) {
+        if (String(values[i][idCol]) === String(id)) {
+          sh.deleteRow(i + 1);
+          return true;
+        }
+      }
+      throw new Error('Licencia no encontrada');
+    }
+    */
+  </script>
+</body>
+</html>
