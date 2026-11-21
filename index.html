@@ -104,7 +104,7 @@ dialog form{padding:24px}.fg{display:grid;grid-template-columns:1fr 1fr;gap:12px
     <h1>Licencias</h1><p class="lead">Busca, filtra y administra cada licencia.</p>
     <div class="fb" id="tf"></div>
     <div class="tw"><table>
-      <thead><tr><th>Software</th><th>Versión</th><th>Tipo</th><th>Proveedor</th><th>Uso</th><th class="r">Costo total</th><th>Vencimiento</th><th>Estado</th><th></th></tr></thead>
+      <thead><tr><th>Software</th><th>Versión</th><th>Tipo</th><th>Proveedor</th><th>Uso</th><th class="r">Costo total (USD)</th><th>Vencimiento</th><th>Estado</th><th></th></tr></thead>
       <tbody id="tb"></tbody></table></div>
     <div class="foot" id="tc"></div>
   </section>
@@ -136,17 +136,17 @@ dialog form{padding:24px}.fg{display:grid;grid-template-columns:1fr 1fr;gap:12px
     <label>Versión<input name="version"></label>
     <label>Tipo<select name="tipo"></select></label>
     <label>Proveedor<input name="proveedor" list="lp"></label>
-    <label>Departamento<input name="depto" list="ld"></label>
+    <label>Departamento<select name="depto"></select></label>
     <label>Cantidad<input name="cantidad" type="number" min="0" value="1"></label>
     <label>En uso<input name="enUso" type="number" min="0" value="0"></label>
-    <label>Costo unitario (MXN)<input name="costo" type="number" min="0" step="0.01" value="0"></label>
+    <label>Costo unitario (USD)<input name="costo" type="number" min="0" step="0.01" value="0"></label>
     <label>Renovación automática<select name="renueva"><option>No</option><option>Sí</option></select></label>
     <label>Fecha de compra<input name="compra" type="date"></label>
     <label>Fecha de vencimiento<input name="vence" type="date"></label>
     <label class="w">Responsable<input name="responsable"></label>
     <label class="w">Notas<textarea name="notas" rows="2"></textarea></label>
   </div>
-  <datalist id="lp"></datalist><datalist id="ld"></datalist>
+  <datalist id="lp"></datalist>
   <div class="ft"><button type="button" class="btn" id="cx">Cancelar</button><button type="submit" class="btn p" id="sv">Guardar</button></div>
 </form></dialog>
 
@@ -162,9 +162,10 @@ dialog form{padding:24px}.fg{display:grid;grid-template-columns:1fr 1fr;gap:12px
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 <script>
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
-const TIPOS=['Suscripción','Perpetua','OEM','Volumen','Open source','Otro'],ESTADOS=['Vigente','Por vencer','Vencida','Sin vencimiento'];
+const TIPOS=['Suscripción Anual','Perpetua','OEM','Volumen','Open source','Otro'],ESTADOS=['Vigente','Por vencer','Vencida','Sin vencimiento'];
+const DEPTOS=['Administración','Digital','Dirección General','Dirección Médica','Dirección Mercadotecnia','Finanzas','IT','Logística','Mercadotecnia','Recursos Humanos','Ventas'];
 const CL={'Vencida':'er','Por vencer':'wn','Vigente':'ok','Sin vencimiento':'gr'};
-const money=n=>new Intl.NumberFormat('es-MX',{style:'currency',currency:'MXN'}).format(+n||0);
+const money=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',currencyDisplay:'code'}).format(+n||0).replace(/\u00a0/g,' ');
 const fd=s=>s?new Date(s+'T00:00:00').toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric'}):'—';
 const today=(()=>{const d=new Date();d.setHours(0,0,0,0);return d})();
 const iso=d=>new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10);
@@ -173,18 +174,19 @@ const dias=l=>l.vence?Math.round((new Date(l.vence+'T00:00:00')-today)/864e5):nu
 const estado=l=>{const d=dias(l);return d===null?'Sin vencimiento':d<0?'Vencida':d<=90?'Por vencer':'Vigente'};
 const tot=l=>(+l.cantidad||0)*(+l.costo||0);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const optsD=()=>[...new Set([...DEPTOS,...DATA.map(l=>l.depto).filter(Boolean)])].sort((a,b)=>a.localeCompare(b,'es'));
 const uniq=k=>[...new Set(DATA.map(l=>l[k]).filter(Boolean))].sort();
 let DATA=[],editId=null;
 
 /* ---------- Datos: Google Sheets (Apps Script) o demo local ---------- */
 const API=()=>localStorage.getItem('lic_api')||'';
 function seed(){return[
- {id:'d1',software:'Microsoft 365 Business',descripcion:'Suite de oficina y correo',version:'2024',tipo:'Suscripción',proveedor:'Microsoft',cantidad:120,enUso:112,costo:2650,compra:add(-300),vence:add(65),renueva:'Sí',depto:'TI',responsable:'Soporte TI',notas:''},
- {id:'d2',software:'Adobe Creative Cloud',descripcion:'Diseño y video',version:'2025',tipo:'Suscripción',proveedor:'Adobe',cantidad:15,enUso:6,costo:12400,compra:add(-340),vence:add(22),renueva:'No',depto:'Marketing',responsable:'Ana R.',notas:''},
- {id:'d3',software:'Windows Server',descripcion:'Servidores de aplicaciones',version:'2022',tipo:'Volumen',proveedor:'Microsoft',cantidad:6,enUso:6,costo:18900,compra:add(-700),vence:'',renueva:'No',depto:'Infraestructura',responsable:'Luis M.',notas:'Licencia perpetua'},
- {id:'d4',software:'Antivirus Endpoint',descripcion:'Protección de equipos',version:'14.3',tipo:'Suscripción',proveedor:'ESET',cantidad:150,enUso:158,costo:520,compra:add(-390),vence:add(-12),renueva:'No',depto:'Seguridad',responsable:'Soporte TI',notas:'Renovar ya'},
- {id:'d5',software:'AutoCAD',descripcion:'Diseño técnico',version:'2025',tipo:'Suscripción',proveedor:'Autodesk',cantidad:8,enUso:3,costo:9800,compra:add(-200),vence:add(160),renueva:'Sí',depto:'Ingeniería',responsable:'Marco T.',notas:''},
- {id:'d6',software:'Zoom Workplace',descripcion:'Videoconferencias',version:'6.x',tipo:'Suscripción',proveedor:'Zoom',cantidad:40,enUso:35,costo:3300,compra:add(-335),vence:add(28),renueva:'Sí',depto:'TI',responsable:'Soporte TI',notas:''}]}
+ {id:'d1',software:'Microsoft 365 Business',descripcion:'Suite de oficina y correo',version:'2024',tipo:'Suscripción Anual',proveedor:'Microsoft',cantidad:120,enUso:112,costo:2650,compra:add(-300),vence:add(65),renueva:'Sí',depto:'IT',responsable:'Soporte TI',notas:''},
+ {id:'d2',software:'Adobe Creative Cloud',descripcion:'Diseño y video',version:'2025',tipo:'Suscripción Anual',proveedor:'Adobe',cantidad:15,enUso:6,costo:12400,compra:add(-340),vence:add(22),renueva:'No',depto:'Mercadotecnia',responsable:'Ana R.',notas:''},
+ {id:'d3',software:'Windows Server',descripcion:'Servidores de aplicaciones',version:'2022',tipo:'Volumen',proveedor:'Microsoft',cantidad:6,enUso:6,costo:18900,compra:add(-700),vence:'',renueva:'No',depto:'IT',responsable:'Luis M.',notas:'Licencia perpetua'},
+ {id:'d4',software:'Antivirus Endpoint',descripcion:'Protección de equipos',version:'14.3',tipo:'Suscripción Anual',proveedor:'ESET',cantidad:150,enUso:158,costo:520,compra:add(-390),vence:add(-12),renueva:'No',depto:'IT',responsable:'Soporte TI',notas:'Renovar ya'},
+ {id:'d5',software:'AutoCAD',descripcion:'Diseño técnico',version:'2025',tipo:'Suscripción Anual',proveedor:'Autodesk',cantidad:8,enUso:3,costo:9800,compra:add(-200),vence:add(160),renueva:'Sí',depto:'Digital',responsable:'Marco T.',notas:''},
+ {id:'d6',software:'Zoom Workplace',descripcion:'Videoconferencias',version:'6.x',tipo:'Suscripción Anual',proveedor:'Zoom',cantidad:40,enUso:35,costo:3300,compra:add(-335),vence:add(28),renueva:'Sí',depto:'IT',responsable:'Soporte TI',notas:''}]}
 function demo(a,d){let L=JSON.parse(localStorage.getItem('lic_demo')||'null')||seed();
  if(a==='create'){d.id='d'+Date.now();L.push(d)}else if(a==='update')L=L.map(x=>x.id===d.id?d:x);else if(a==='delete')L=L.filter(x=>x.id!==d.id);
  localStorage.setItem('lic_demo',JSON.stringify(L));return a==='list'?L:{ok:true}}
@@ -193,7 +195,7 @@ async function call(a,d){
  if(a==='list'){const r=await (await fetch(API()+'?action=list')).json();if(!r.ok)throw Error(r.error);return r.data}
  const r=await (await fetch(API(),{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:a,data:d})})).json();
  if(!r.ok)throw Error(r.error);return r}
-const norm=l=>({...l,cantidad:+l.cantidad||0,enUso:+l.enUso||0,costo:+l.costo||0,compra:String(l.compra||'').slice(0,10),vence:String(l.vence||'').slice(0,10)});
+const norm=l=>({...l,tipo:l.tipo==='Suscripción'?'Suscripción Anual':l.tipo,cantidad:+l.cantidad||0,enUso:+l.enUso||0,costo:+l.costo||0,compra:String(l.compra||'').slice(0,10),vence:String(l.vence||'').slice(0,10)});
 async function load(){try{DATA=(await call('list')).map(norm)}catch(e){toast('No se pudo leer la hoja: '+e.message);DATA=[]}
  fillSel();render()}
 function toast(m){const t=$('#ts');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),3200)}
@@ -214,8 +216,8 @@ const filtrar=o=>DATA.filter(l=>{const q=(o.q||'').toLowerCase();
  &&(!o.vDesde||(l.vence&&l.vence>=o.vDesde))&&(!o.vHasta||(l.vence&&l.vence<=o.vHasta))
  &&(!o.cDesde||(l.compra&&l.compra>=o.cDesde))&&(!o.cHasta||(l.compra&&l.compra<=o.cHasta))}).sort(ORD[o.orden||'vence']);
 function fillSel(){[['proveedor','Todos'],['depto','Todos']].forEach(([k,t])=>$$(`select[name=${k}]`).forEach(s=>{const v=s.value;
- s.innerHTML=`<option value="">${t}</option>`+uniq(k).map(x=>`<option>${esc(x)}</option>`).join('');s.value=v}));
- $('#lp').innerHTML=uniq('proveedor').map(x=>`<option value="${esc(x)}">`).join('');$('#ld').innerHTML=uniq('depto').map(x=>`<option value="${esc(x)}">`).join('')}
+ s.innerHTML=`<option value="">${s.closest('dialog')?'Selecciona…':t}</option>`+(k==='depto'?optsD():uniq(k)).map(x=>`<option>${esc(x)}</option>`).join('');s.value=v}));
+ $('#lp').innerHTML=uniq('proveedor').map(x=>`<option value="${esc(x)}">`).join('');}
 
 /* ---------- Render ---------- */
 function render(){dash();tabla();conteo()}
@@ -246,7 +248,7 @@ function tabla(){const L=filtrar(vals($('#tf')));
 function conteo(){const L=filtrar(vals($('#rf')));$('#rn').textContent=`${L.length} licencias coinciden con los filtros · costo total ${money(L.reduce((s,l)=>s+tot(l),0))}`}
 
 /* ---------- Reportes ---------- */
-const COLS={software:['Software',l=>l.software],descripcion:['Descripción',l=>l.descripcion||''],version:['Versión',l=>l.version||''],tipo:['Tipo',l=>l.tipo||''],proveedor:['Proveedor',l=>l.proveedor||''],cantidad:['Cant.',l=>l.cantidad],enUso:['En uso',l=>l.enUso],costo:['Costo unit.',l=>money(l.costo)],total:['Costo total',l=>money(tot(l))],compra:['Compra',l=>fd(l.compra)],vence:['Vencimiento',l=>fd(l.vence)],dias:['Días rest.',l=>{const d=dias(l);return d===null?'—':d}],estado:['Estado',estado],depto:['Depto.',l=>l.depto||''],responsable:['Responsable',l=>l.responsable||''],renueva:['Renueva',l=>l.renueva||'']};
+const COLS={software:['Software',l=>l.software],descripcion:['Descripción',l=>l.descripcion||''],version:['Versión',l=>l.version||''],tipo:['Tipo',l=>l.tipo||''],proveedor:['Proveedor',l=>l.proveedor||''],cantidad:['Cant.',l=>l.cantidad],enUso:['En uso',l=>l.enUso],costo:['Costo unit. (USD)',l=>money(l.costo)],total:['Costo total (USD)',l=>money(tot(l))],compra:['Compra',l=>fd(l.compra)],vence:['Vencimiento',l=>fd(l.vence)],dias:['Días rest.',l=>{const d=dias(l);return d===null?'—':d}],estado:['Estado',estado],depto:['Depto.',l=>l.depto||''],responsable:['Responsable',l=>l.responsable||''],renueva:['Renueva',l=>l.renueva||'']};
 const DEF=['software','version','tipo','proveedor','cantidad','total','vence','dias','estado'];
 $('#rc').innerHTML=Object.entries(COLS).map(([k,v])=>`<label><input type="checkbox" value="${k}" ${DEF.includes(k)?'checked':''}>${v[0]}</label>`).join('');
 const selCols=()=>$$('#rc input:checked').map(i=>i.value);
@@ -261,7 +263,7 @@ function pdf(){
  doc.setFillColor(15,27,45);doc.rect(0,0,W,74,'F');doc.setTextColor(255);doc.setFont('helvetica','bold');doc.setFontSize(18);doc.text($('#rt').value||'Reporte de licencias',40,34);
  doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.setTextColor(190,205,230);doc.text(doc.splitTextToSize(resumenFiltros(o),W-80),40,52);
  doc.text('Generado: '+new Date().toLocaleString('es-MX'),W-40,34,{align:'right'});
- const st=k=>L.filter(l=>estado(l)===k).length,kp=[['Licencias',L.length],['Costo total',money(L.reduce((s,l)=>s+tot(l),0))],['Por vencer (90 d)',st('Por vencer')],['Vencidas',st('Vencida')]],bw=(W-80-30)/4;
+ const st=k=>L.filter(l=>estado(l)===k).length,kp=[['Licencias',L.length],['Costo total (USD)',money(L.reduce((s,l)=>s+tot(l),0))],['Por vencer (90 d)',st('Por vencer')],['Vencidas',st('Vencida')]],bw=(W-80-30)/4;
  kp.forEach(([a,b],i)=>{const x=40+i*(bw+10);doc.setFillColor(243,246,251);doc.roundedRect(x,92,bw,48,6,6,'F');doc.setTextColor(100,116,139);doc.setFontSize(8);doc.text(a,x+10,108);doc.setTextColor(15,27,45);doc.setFont('helvetica','bold');doc.setFontSize(13);doc.text(String(b),x+10,128);doc.setFont('helvetica','normal')});
  const rgb={'Vigente':[18,161,80],'Por vencer':[217,130,0],'Vencida':[217,58,58],'Sin vencimiento':[148,163,184]};let x=40;
  ESTADOS.forEach(e=>{const w=(W-80)*st(e)/L.length;if(w>0){doc.setFillColor(...rgb[e]);doc.rect(x,154,w,9,'F');x+=w}});
@@ -315,3 +317,4 @@ load();
 </script>
 </body>
 </html>
+
