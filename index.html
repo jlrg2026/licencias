@@ -104,7 +104,7 @@ dialog form{padding:24px}.fg{display:grid;grid-template-columns:1fr 1fr;gap:12px
     <h1>Licencias</h1><p class="lead">Busca, filtra y administra cada licencia.</p>
     <div class="fb" id="tf"></div>
     <div class="tw"><table>
-      <thead><tr><th>Software</th><th>Versión</th><th>Tipo</th><th>Proveedor</th><th>Uso</th><th class="r">Costo total (USD)</th><th>Vencimiento</th><th>Estado</th><th></th></tr></thead>
+      <thead><tr><th>Software</th><th>Versión</th><th>Tipo</th><th>Notas</th><th>Proveedor</th><th>Uso</th><th class="r">Costo total (USD)</th><th>Vencimiento</th><th>Estado</th><th></th></tr></thead>
       <tbody id="tb"></tbody></table></div>
     <div class="foot" id="tc"></div>
   </section>
@@ -239,11 +239,11 @@ function dash(){const L=DATA,n=x=>L.filter(l=>{const d=dias(l);return d!==null&&
  if(!so.length&&!su.length)$('#ut').innerHTML='<small>Sin alertas de uso.</small>'}
 function tabla(){const L=filtrar(vals($('#tf')));
  $('#tb').innerHTML=L.map(l=>{const e=estado(l),d=dias(l),p=l.cantidad?Math.min(100,Math.round(l.enUso/l.cantidad*100)):0;
-  return`<tr><td><b>${esc(l.software)}</b><small>${esc(l.descripcion)}</small></td><td>${esc(l.version)}</td><td>${esc(l.tipo)}</td><td>${esc(l.proveedor)}<small>${esc(l.depto)}</small></td>
+  return`<tr><td><b>${esc(l.software)}</b><small>${esc(l.descripcion)}</small></td><td>${esc(l.version)}</td><td>${esc(l.tipo)}</td><td>${esc(l.notas)}</td><td>${esc(l.proveedor)}<small>${esc(l.depto)}</small></td>
   <td><div class="use ${l.enUso>l.cantidad?'over':''}"><i style="width:${p}%"></i></div><small>${l.enUso}/${l.cantidad} en uso</small></td>
   <td class="r">${money(tot(l))}<small>${money(l.costo)} c/u</small></td><td>${fd(l.vence)}<small>${d===null?'':d<0?'hace '+(-d)+' d':'en '+d+' d'}</small></td>
   <td><span class="chip ${CL[e]}">${e}</span></td><td class="act"><button data-e="${l.id}" title="Editar" aria-label="Editar">✎</button><button data-x="${l.id}" title="Eliminar" aria-label="Eliminar">🗑</button></td></tr>`}).join('')
-  ||'<tr><td colspan="9" class="empty">Sin resultados. Ajusta los filtros o agrega una licencia.</td></tr>';
+  ||'<tr><td colspan="10" class="empty">Sin resultados. Ajusta los filtros o agrega una licencia.</td></tr>';
  $('#tc').textContent=`${L.length} de ${DATA.length} licencias · ${money(L.reduce((s,l)=>s+tot(l),0))}`}
 function conteo(){const L=filtrar(vals($('#rf')));$('#rn').textContent=`${L.length} licencias coinciden con los filtros · costo total ${money(L.reduce((s,l)=>s+tot(l),0))}`}
 
@@ -317,4 +317,3 @@ load();
 </script>
 </body>
 </html>
-
